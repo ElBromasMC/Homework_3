@@ -1,56 +1,57 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.animation import FuncAnimation
+import matplotlib.animation as animation
+from matplotlib.animation import PillowWriter
 
-# Datos iniciales
-Vi = 3e6        # m/s
-E = 400         # N/C
-Tt = 3000e-9    # Tiempo total
-dt = 100e-9     # Intervalo de tiempo
+# Variables in SI
+E  = (0, 400)
 
-# Calculamos la aceleración debida al campo eléctrico (F = q * E)
-q = -1.602e-19          # Carga del electrón en C
-a = q * E / 9.109e-31  # Masa del electrón en kg
+v0 = (3e+6, 0)
+q = -1.6e-19
+m = 9.1e-31
 
-# Calculamos la velocidad final
-Vf = Vi + a * Tt
+t0 = 0
+tf = 3000e-9 
+dt = 3e-8
 
-# Calculamos los tiempos
-tiempos = np.arange(0, Tt + dt, dt)
+# Calculate the number of frames
+num_frames = int((tf - t0) / dt) + 1
 
-# Calculamos las posiciones usando la ecuación de movimiento
-y = 0.5 * a * tiempos**2 + Vi * tiempos
-Xf = Vi * Tt
+# Equation of motion
+def motion(t):
+    return v0[0]*t + E[0]*q*t**2/(2*m), v0[1]*t + E[1]*q*t**2/(2*m)
 
-# Crear figura
+# Plot the particle
 fig, ax = plt.subplots()
-ax.set_xlim(0, Xf)
-ax.set_ylim(-300,0)      # Rango en el eje y
-
-circle, = ax.plot([], [], 'ro', markersize=8)  # Usamos 'ro' para un círculo rojo
-title = ax.set_title("")  # Inicialmente, el título está vacío
-ax.set_xlabel("Posición X")
-ax.set_ylabel("Posicion Y")
+ax.set_title("Particles's motion")
+ax.set_xlim(motion(t0)[0], motion(tf)[0])
+ax.set_ylim(motion(tf)[1], motion(t0)[1])
+ax.set_xlabel("X")
+ax.set_ylabel("Y")
+ax.autoscale(enable=True, axis='both')
 ax.grid()
 
-# Función de inicialización
+particle = ax.plot([], [], 'bo')[0]
+info_text = ax.text(0.1, 0.8, '', transform=ax.transAxes)
+
+
+
 def init():
-    circle.set_data([], [])
-    return circle,
+    particle.set_data([], [])
+    info_text.set_text('')
+    return particle,
 
-# Función de animación
-def animate(i):
-    x = Vi*tiempos[i]  # Obtenemos la posición en x en el tiempo actual
-    y_data = y[i]   # Obtenemos la posición en y en el tiempo actual
-    circle.set_data(x, y_data)
-    title.set_text(f"Posición en (x,y) = ({x:.2f} ,{y_data:.2f}) ")
-    
+def animate(t):
+    x, y = motion(t)
+    particle.set_data(x, y)
+    info_text.set_text(f'Time: {t:.2e}s\nPosition: ({x:.2f}, {y:.2f})')
+    return particle, info_text
 
-# Crear la animación
-ani = FuncAnimation(fig, animate, init_func=init, frames=len(tiempos), interval=50, blit=False)
+# Create the animation
+ani = animation.FuncAnimation(fig, animate, frames=np.linspace(t0, tf, num_frames), init_func=init, blit=True, interval=1)
 
-# Crear la animación en formato MP4
-ani.save('electron_animation.mp4', fps=10)
+# Save the animation as gif
+# ani.save('particle_motion.gif', writer=PillowWriter(fps=30))
 
-# Mostrar la figura
+# Display the animation
 plt.show()

@@ -1,39 +1,36 @@
-# El codigo te crea una imagen con la traza de un electro con el  tiempo 
-
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.ticker import ScalarFormatter 
 
-# Datos iniciales
-Vi = 3e6        # m/s
-E = 400         # N/C
-Tt = 3000e-9    # Tiempo total
-dt = 100e-9     # Intervalo de tiempo
+# Variables in SI
+E  = (0, 400)
 
-# Calculamos la aceleración debida al campo eléctrico (F = q * E)
-q = -1.602e-19          # Carga del electrón en C
-a = q * E / 9.109e-31  # Masa del electrón en kg
+v0 = (3e+6, 0)
+q = -1.6e-19
+m = 9.1e-31
 
-# Calculamos la velocidad final
-Vf = Vi + a * Tt
+t0 = 0
+tf = 3000e-9 
+dt = 100e-9
 
-# Calculamos los tiempos
-tiempos = np.arange(0, Tt + dt, dt)
+# Domain of time
+t = np.arange(t0, tf + dt, dt)
 
-# Calculamos las posiciones usando la ecuación de movimiento
-y = 0.5 * a * tiempos**2 + Vi * tiempos
-x = Vi * tiempos
+# Equation of motion
+def motion(t):
+    return v0[0]*t + E[0]*q*t**2/(2*m), v0[1]*t + E[1]*q*t**2/(2*m)
 
-# Crear figura
+x, y = motion(t)
+
+# Plot the motion
 fig, ax = plt.subplots()
-line, = ax.plot(x,y, "ro")
+particle = ax.plot(x,y, "bo")[0]
 
-ax.set_title("Traza del movimiento del electron con el tiempo")
-ax.set_xlabel("Posicion X")
-ax.set_ylabel("Posicion Y")
+ax.set_title("Particle's motion")
+ax.set_xlabel("X")
+ax.set_ylabel("Y")
 ax.grid()
-plt.tight_layout()
-ax.autoscale(enable=True, axis='both', tight=True)
+ax.autoscale(enable=True, axis='both')
 
-# Mostrar la figura
+# Display the plot
 plt.show()
