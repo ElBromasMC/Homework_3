@@ -15,17 +15,7 @@ class Particle():
     def getYField(self, position):
         return K*self.charge*(position[1]-self.position[1])/np.sqrt((position[0]-self.position[0])**2 + (position[1]-self.position[1])**2)**3
 
-
-# Define the particles
-particles = [ Particle((-1, -1), 3e-6)
-            , Particle((1, 1), 3e-6)
-            , Particle((1, -1), -3e-6)
-            , Particle((-1, 1), -3e-6)
-            ]
-
-
-
-def ex_3a():
+def plotVectorField(particles):
     # Domain of the vector field
     x, y = np.meshgrid(np.linspace(-5, +5, 30), np.linspace(-5, +5, 30))
     # The vector field
@@ -40,7 +30,7 @@ def ex_3a():
 
     # Plot the function via streamplot
     plt.streamplot(x, y, u, v)
-    plt.title('Ejercicio 3b')
+    plt.title('Vector field')
     plt.grid(True)
     plt.gca().set_aspect('equal')
 
@@ -48,4 +38,9 @@ def ex_3a():
     plt.show()
 
 if __name__ == '__main__':
-    ex_3a()
+    # Define the particles
+    particles = [ Particle((-1, 0), 3e-6) 
+                , Particle((1, 0), -3e-6)
+                ]
+    plotVectorField(particles)
+

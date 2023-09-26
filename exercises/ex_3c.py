@@ -39,6 +39,10 @@ def plotVectorField(particles):
 
 if __name__ == '__main__':
     # Define the particles
-    particles = [ Particle((2, 3), -3e-6) ]
+    particles = [ Particle((-1, -1), 3e-6) 
+                , Particle((1, 1), 3e-6)
+                , Particle((1, -1), -3e-6)
+                , Particle((-1, 1), -3e-6)
+                ]
     plotVectorField(particles)
 
